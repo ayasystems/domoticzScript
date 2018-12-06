@@ -1,0 +1,42 @@
+--dzEvents
+--Cambiar la matrícula por la de vuestro coche. Buscar en url = 'https://puedocircular.com/api/v1/1111AAA'
+--Crear un dispositivo virtual text y poner su nombre en el script, en mi caso se llama Escenario
+
+return {
+	on = {
+		timer = {
+			'every 1 minutes' -- just an example to trigger the request
+		},
+		httpResponses = {
+			'triggerScenary' -- must match with the callback passed to the openURL command
+		}
+	},
+	execute = function(domoticz, item)
+
+		if (item.isTimer) then
+			domoticz.openURL({
+				url = 'https://puedocircular.com/api/v1/1111AAA',
+				method = 'GET',
+				callback = 'triggerScenary', -- see httpResponses above.
+			})
+		end
+
+		if (item.isHTTPResponse) then
+
+			if (item.statusCode == 200) then
+				if (item.isJSON) then
+
+					local scenary = item.json.scenary  -- just an example 
+					if(domoticz.devices('Escenario').text~=scenary)then
+					   domoticz.devices('Escenario').updateText(scenary)
+					end
+				end
+			else
+				domoticz.log('There was a problem handling the request', domoticz.LOG_ERROR)
+				domoticz.log(item, domoticz.LOG_ERROR)
+			end
+
+		end
+
+	end
+}
