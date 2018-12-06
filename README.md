@@ -1,0 +1,2 @@
+# domoticzScript
+Scripts domoticz
