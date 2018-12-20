@@ -1,7 +1,6 @@
 --dzEvents
 --Cambiar la matrícula por la de vuestro coche. Buscar en url = 'https://puedocircular.com/api/v1/1111AAA'
 --Crear un dispositivo virtual text y poner su nombre en el script, en mi caso se llama Escenario
-
 return {
 	on = {
 		timer = {
@@ -15,7 +14,7 @@ return {
 
 		if (item.isTimer) then
 			domoticz.openURL({
-				url = 'https://puedocircular.com/api/v1/1111AAA',
+				url = 'https://puedocircular.com/api/v1/1111AAA8º5',
 				method = 'GET',
 				callback = 'triggerScenary', -- see httpResponses above.
 			})
