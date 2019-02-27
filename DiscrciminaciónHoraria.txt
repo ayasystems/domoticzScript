@@ -22,7 +22,7 @@ return {
 		domoticz.variables('powerAnterior').set(counterToday)
 		
 		--Calculamos el consumo desde la última lectura
-		if(tonumber(counterToday)>tonumber(counterPrev))then
+		if(tonumber(counterToday)>=tonumber(counterPrev))then
 		    consumo = tonumber(counterToday)-tonumber(counterPrev)
 	    else
 	        consumo = tonumber(counterToday)
