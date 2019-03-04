@@ -1,0 +1,57 @@
+-- Este script baja la lista de precios de tarifa PVPC con discrminación horaria y guarda en una 
+-- variable (lowCostEnergyHour) la hora a la que la energía tiene el mejor precio al cabo del día
+-- Es necesario tener creada la variable lowCostEnergyHour como tipo string
+-- Script generado para DzEvents
+return {
+	on = {
+		timer = {
+			'at 00:00'  
+		},
+		httpResponses = {
+			'pvpcCallback' -- must match with the callback passed to the openURL command
+		}
+	},
+	execute = function(domoticz, item)
+
+		if (item.isTimer) then
+		    print('Llamada API PVPC')
+			domoticz.openURL({
+				url = 'https://api.esios.ree.es/archives/70/download_json?locale=es',
+				method = 'GET',
+				callback = 'pvpcCallback', -- see httpResponses above.
+			})
+		end
+
+		if (item.isHTTPResponse) then
+		    print('Respuesta API PVPC '..item.statusCode)
+			if (item.statusCode == 200) then
+				if (item.isJSON) then  
+                     
+                local precioEco = 999999
+                local horaEco   = 0
+					
+				for i = 1,24,1
+				do
+				 
+					local someValue = item.json.PVPC[i]["NOC"] -- just an example
+                    someValue = someValue:gsub(',','.')
+                    someValue = tonumber(someValue)/1000
+					print('Valor PVPC '..tostring(i-1)..'h '..someValue)
+					if someValue<precioEco then
+					   precioEco = someValue
+					   horaEco   = i-1
+					end
+				end
+                print('Precio más bajo a las '..tonumber(horaEco)..'h a '..precioEco..' €/kWh')
+                --Actualizamos la variable con la hora de tarifa más económica para hoy
+        		domoticz.variables('lowCostEnergyHour').set(horaEco)                    
+				end
+			else
+				domoticz.log('There was a problem handling the request', domoticz.LOG_ERROR)
+				domoticz.log(item, domoticz.LOG_ERROR)
+			end
+
+		end
+
+	end
+}
