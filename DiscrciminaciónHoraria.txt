@@ -3,6 +3,7 @@
 --Añadimos el siguiente script DzEvents
 --Los comandos PRINT están puestos con fin de Debug, quitarlos si os funciona correctamente
 --El ejemplo añade P1 o P2 según hora. En el ejemplo entre 23 y 12h sería valle y el resto punta
+--En necesario crear la variable powerAnterior !!
 
 return {
 	on = {
