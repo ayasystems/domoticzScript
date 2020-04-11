@@ -1,24 +1,35 @@
+--11.04.2020
+--Si la raspberry tiene definida la hora correctamente, hará el cambio veramo invierno de franja horaria
+
 --Es necesario tener previamente creado el PZEM que es el actual sistema de medida
+--Cambiar los domoticz.devices('PZEM') al nombre vuestro que corresponda
 --Creamos un nuevo dispositivo P1 Energy, el cual en el ejemplo yo he llamado DHA
 --Añadimos el siguiente script DzEvents
 --Los comandos PRINT están puestos con fin de Debug, quitarlos si os funciona correctamente
 --El ejemplo añade P1 o P2 según hora. En el ejemplo entre 23 y 12h sería valle y el resto punta
 --En necesario crear la variable powerAnterior !!
 
+
 return {
 	on = {
 		timer = {
 			'every 1 minutes' -- just an example to trigger the request
-		} 
+		}
 	},
+    data = {
+          horario = { initial = "" }
+        }, 
 	execute = function(domoticz, item)
+        local tipoHorario = domoticz.data.horario
+        local inicio  = 0 
+        local fin     = 0
 	    --Obtenemos la lectura actual para compararla con la anterior y según que hora sea cargamos en P1 o P2
 	    instantNow   = domoticz.devices('PZEM').usage
-	    print('Instantaneo W = '..instantNow)
+	    --print('Instantaneo W = '..instantNow)
 	    counterToday = domoticz.devices('PZEM').counterToday*1000
 	    counterPrev  = domoticz.variables('powerAnterior').value
-	    print('counterToday = '..counterToday)
-	    print('powerAnterior = '..counterPrev)
+	    --print('counterToday = '..counterToday)
+	    --print('powerAnterior = '..counterPrev)
 		domoticz.log('counterToday = '..counterToday, domoticz.LOG_INFO)
 		domoticz.variables('powerAnterior').set(counterToday)
 		
@@ -28,26 +39,48 @@ return {
 	    else
 	        consumo = tonumber(counterToday)
 	    end
-		print('Consumo último minuto = '..consumo)
+		--print('Consumo último minuto = '..consumo)
 		
 		--Ahora cargamos P1 o P2 según el tramo horario
 		p1 = domoticz.devices('DHA').usage1
 		p2 = domoticz.devices('DHA').usage2
 		--domoticz.devices.updateP1(usage1, usage2, return1, return2, cons, prod)
  
-		print('P1 = '..p1)
-		print('P2 = '..p2)
+ 
 		
 		local Time = require('Time')
 		local now = Time()
+ 
+       
 		--de 22 a 12 valle
-		if(now.hour > 22 or now.hour<12)then
-		   print('Valle')
+		if((now.hour == 0 and now.minute==1)or  tipoHorario == "" ) then
+		    tipoHorario = os.date("%Z")
+		    domoticz.data.horario = tipoHorario
+        	domoticz.log('Actualizado horario a ' .. tipoHorario, domoticz.LOG_ERROR)
+		end
+		        	domoticz.log('Actualizado horario a ' .. tipoHorario, domoticz.LOG_ERROR)
+		if(tipoHorario=="CEST")then
+		  --horario verano  
+          inicio = 23
+          fin    = 13 
+		else
+		  --horario invierno  
+          inicio = 22
+          fin    = 12 
+		end
+		if(now.hour >= inicio or now.hour < fin)then
+		   --print('Valle')
 		   p2 = p2 + consumo
+		   if(domoticz.devices('TARIFA').text=='Punta')then
+		    domoticz.devices('TARIFA').updateText('Valle')
+		   end
 		   domoticz.devices('DHA').updateP1(p1, p2, 0, 0, instantNow, 0)
 		else
-		   print('Punta')
+		   --print('Punta')
 		   p1 = p1 + consumo
+		   if(domoticz.devices('TARIFA').text=='Valle')then
+		    domoticz.devices('TARIFA').updateText('Punta')
+		   end
 		   domoticz.devices('DHA').updateP1(p1, p2, 0, 0, instantNow, 0)		    
 		end
 		--de 12 a 22 punta
