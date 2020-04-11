@@ -1,6 +1,6 @@
 --11.04.2020
 --Si la raspberry tiene definida la hora correctamente, hará el cambio veramo invierno de franja horaria
-
+--17.02.2019 -- versión inicial
 --Es necesario tener previamente creado el PZEM que es el actual sistema de medida
 --Cambiar los domoticz.devices('PZEM') al nombre vuestro que corresponda
 --Creamos un nuevo dispositivo P1 Energy, el cual en el ejemplo yo he llamado DHA
@@ -9,6 +9,7 @@
 --El ejemplo añade P1 o P2 según hora. En el ejemplo entre 23 y 12h sería valle y el resto punta
 --En necesario crear la variable powerAnterior !!
 
+--https://domotuto.com/registro-de-consumo-en-dha/
 
 return {
 	on = {
