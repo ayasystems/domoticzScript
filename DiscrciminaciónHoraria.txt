@@ -4,6 +4,7 @@
 --Es necesario tener previamente creado el PZEM que es el actual sistema de medida
 --Cambiar los domoticz.devices('PZEM') al nombre vuestro que corresponda
 --Creamos un nuevo dispositivo P1 Energy, el cual en el ejemplo yo he llamado DHA
+--Creamos también un nuevo dispositivo texto llamado TARIFA
 --Añadimos el siguiente script DzEvents
 --Los comandos PRINT están puestos con fin de Debug, quitarlos si os funciona correctamente
 --El ejemplo añade P1 o P2 según hora. En el ejemplo entre 23 y 12h sería valle y el resto punta
