@@ -1,3 +1,5 @@
+--19.04.2020
+-- Ya no es necesario crear la variable dentro de domoticz llamada powerAnterior. Se creará sola dentro del script
 --11.04.2020
 --Si la raspberry tiene definida la hora correctamente, hará el cambio veramo invierno de franja horaria
 --17.02.2019 -- versión inicial
@@ -19,7 +21,8 @@ return {
 		}
 	},
     data = {
-          horario = { initial = "" }
+          horario = { initial = "" },
+          counterPrev = { initial = "0" }
         }, 
 	execute = function(domoticz, item)
         local tipoHorario = domoticz.data.horario
@@ -29,11 +32,12 @@ return {
 	    instantNow   = domoticz.devices('PZEM').usage
 	    --print('Instantaneo W = '..instantNow)
 	    counterToday = domoticz.devices('PZEM').counterToday*1000
-	    counterPrev  = domoticz.variables('powerAnterior').value
+	    counterPrev  = domoticz.data.counterPrev
 	    --print('counterToday = '..counterToday)
 	    --print('powerAnterior = '..counterPrev)
 		domoticz.log('counterToday = '..counterToday, domoticz.LOG_INFO)
-		domoticz.variables('powerAnterior').set(counterToday)
+		domoticz.data.counterPrev = counterToday
+		--domoticz.variables('powerAnterior').set(counterToday)
 		
 		--Calculamos el consumo desde la última lectura
 		if(tonumber(counterToday)>=tonumber(counterPrev))then
@@ -60,7 +64,7 @@ return {
 		    domoticz.data.horario = tipoHorario
         	domoticz.log('Actualizado horario a ' .. tipoHorario, domoticz.LOG_ERROR)
 		end
-		        	domoticz.log('Actualizado horario a ' .. tipoHorario, domoticz.LOG_ERROR)
+        --domoticz.log('Actualizado horario a ' .. tipoHorario, domoticz.LOG_ERROR)
 		if(tipoHorario=="CEST")then
 		  --horario verano  
           inicio = 23
