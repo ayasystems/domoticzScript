@@ -1,3 +1,5 @@
+--22.04.2020
+-- No se actualizaba correctamente el dispositivo texto llamado TARIFA
 --19.04.2020
 -- Ya no es necesario crear la variable dentro de domoticz llamada powerAnterior. Se creará sola dentro del script
 --11.04.2020
@@ -77,14 +79,14 @@ return {
 		if(now.hour >= inicio or now.hour < fin)then
 		   --print('Valle')
 		   p2 = p2 + consumo
-		   if(domoticz.devices('TARIFA').text=='Punta')then
+		   if(domoticz.devices('TARIFA').text~='Valle')then
 		    domoticz.devices('TARIFA').updateText('Valle')
 		   end
 		   domoticz.devices('DHA').updateP1(p1, p2, 0, 0, instantNow, 0)
 		else
 		   --print('Punta')
 		   p1 = p1 + consumo
-		   if(domoticz.devices('TARIFA').text=='Valle')then
+		   if(domoticz.devices('TARIFA').text~='Punta')then
 		    domoticz.devices('TARIFA').updateText('Punta')
 		   end
 		   domoticz.devices('DHA').updateP1(p1, p2, 0, 0, instantNow, 0)		    
