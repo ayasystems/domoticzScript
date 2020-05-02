@@ -1,0 +1,31 @@
+-- Partimos de la base de que ya tenemos funcionando el script que nos dice que hora es la más barata hoy en PVPC
+-- https://github.com/ayasystems/domoticzScript/blob/master/checkBestPVPCPrice.txt 
+-- Este script comprobará si estamos en esa hora y encenderá durante una hora el dispositivo que queramos,
+-- en este caso la depuradora de la piscina
+-- 
+
+return {
+	on = {
+		timer = {
+			'at *:00' --comprobamos en todas las horas, al minuto 00
+	   },
+    },
+	execute = function(domoticz, timer)
+	    --leemos cual es la hora barata almacenada en la variable lowCostEnergyHour por el script 
+	    --https://github.com/ayasystems/domoticzScript/blob/master/checkBestPVPCPrice.txt 
+	    --
+		local horaBarata = domoticz.variables('lowCostEnergyHour').value
+
+        --vemos que hora es ahora mismo
+		local Time = require('Time')
+		local now = Time()
+		--domoticz.log('now.hour:   '..now.hour, domoticz.LOG_ERROR)
+        --domoticz.log('horaBarata: '..horaBarata, domoticz.LOG_ERROR)
+        
+        --si la hora es igual a la hora barata... 
+        if((now.hour == tonumber(horaBarata)))then
+          domoticz.log('Horario feliz encendemos dispositivos', domoticz.LOG_ERROR)
+          domoticz.devices('Depuradora').switchOn().forMin(60)
+        end
+	end
+}
