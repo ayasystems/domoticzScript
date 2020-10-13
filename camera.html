@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<!---
+Este template creará una nueva página en custom que visualizará en una sola página todas las cámaras 
+dadas de alta en domoticz
+
+Mas info en https://domotuto.com/?p=4597
+-->
+<html>
+    <head>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+ 
+        <meta charset="UTF-8"/>
+        <meta http-equiv="expires" content="0"/>
+        <title>Visor cámaras @ea4gkq</title>
+	    <script>
+ 
+ function updateCamera(camera){
+	setTimeout(function() { update(camera); }, 2000);
+ //    var element = "cam" + camera;
+ // var image = document.getElementById(element);
+ // image.src = image.src.split("?")[0] + "?idx="+camera+"&t=" + new Date().getTime();
+  //setInterval(updateCamera(camera), 3000);
+ }
+ 
+ 
+  function update(camera){
+ 
+     var element = "cam" + camera;
+  var image = document.getElementById(element);
+  image.src = image.src.split("?")[0] + "?idx="+camera+"&t=" + new Date().getTime();
+  //setInterval(updateCamera(camera), 3000);
+ }
+ 
+	</script>
+    </head>
+    <body>
+
+   <div id="mycontainer">
+   </div>   
+ 
+ 
+ <script>
+ $.getJSON( "/json.htm?type=cameras", function( data ) {
+ var $text = "<div class=\"row-fluid\" id=\"camarasContainer\">";
+ var i = 0;
+  $.each( data.result, function( index ) {
+	i = i +1;
+	var idx = data.result[index].idx;
+	$text = $text + "<img id=\"cam"+idx+"\" name=\"cam"+idx+"\" onload=\"updateCamera('"+idx+"')\" style=\"max-width:520px\" src=\"/camsnapshot.jpg?idx="+idx+"\" >";
+	if(i>2){
+		$text = $text + "</div><div class=\"row-fluid\" id=\"camarasContainer\">";
+		i = 0;
+	}
+  });
+  $text = $text + "</div>"
+ $("#mycontainer").html($text);
+});
+ </script>
+    </body>
+</html> 
