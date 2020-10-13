@@ -50,7 +50,7 @@ curl https://raw.githubusercontent.com/ayasystems/domoticzScript/master/camera.h
   $.each( data.result, function( index ) {
 	i = i +1;
 	var idx = data.result[index].idx;
-	$text = $text + "<img id=\"cam"+idx+"\" name=\"cam"+idx+"\" onload=\"updateCamera('"+idx+"')\" style=\"max-width:520px\" src=\"/camsnapshot.jpg?idx="+idx+"\" >";
+	$text = $text + "<img id=\"cam"+idx+"\" name=\"cam"+idx+"\" onload=\"updateCamera('"+idx+"')\" style=\"max-width:420px\" src=\"/camsnapshot.jpg?idx="+idx+"\" >";
 	if(i>2){
 		$text = $text + "</div><div class=\"row\" id=\"camarasContainer\">";
 		i = 0;
