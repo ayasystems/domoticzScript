@@ -3,7 +3,7 @@
 Este template creará una nueva página en custom que visualizará en una sola página todas las cámaras 
 dadas de alta en domoticz
 
-Más info en https://domotuto.com/como-visualizar-camaras-en-domoticz-con-el-tema-default/
+Mas info en https://domotuto.com/?p=4597
 
 Para cargar directamente este template en domoticz podemos ejecutar el siguiente comando
 
@@ -15,6 +15,8 @@ curl https://raw.githubusercontent.com/ayasystems/domoticzScript/master/camera.h
  
         <meta charset="UTF-8"/>
         <meta http-equiv="expires" content="0"/>
+ 
+	
         <title>Visor cámaras @ea4gkq</title>
 	    <script>
  
@@ -50,13 +52,20 @@ curl https://raw.githubusercontent.com/ayasystems/domoticzScript/master/camera.h
   $.each( data.result, function( index ) {
 	i = i +1;
 	var idx = data.result[index].idx;
-	$text = $text + "<img id=\"cam"+idx+"\" name=\"cam"+idx+"\" onload=\"updateCamera('"+idx+"')\" style=\"max-width:420px\" src=\"/camsnapshot.jpg?idx="+idx+"\" >";
+	var name = data.result[index].Name;
+	var bodyWidth = $(window).width();
+	var maxWidth = 520;
+	if(bodyWidth<640){
+		maxWidth=bodyWidth-20;
+	}
+ 
+	$text = $text + "<img id=\"cam"+idx+"\" name=\"cam_"+name+"\" alt=\"cam_"+name+"\" onerror=\"updateCamera('"+idx+"')\" onload=\"updateCamera('"+idx+"')\" style=\"max-width:"+maxWidth+"px\" src=\"/camsnapshot.jpg?idx="+idx+"&t=" + new Date().getTime() +"\" >";
 	if(i>2){
-		$text = $text + "</div><div class=\"row\" id=\"camarasContainer\">";
+		$text = $text +"</div><div class=\"row\" id=\"camarasContainer\">";
 		i = 0;
 	}
   });
-  $text = $text + "</div>"
+  $text = $text +"</div>";
  $("#mycontainer").html($text);
 });
  </script>
