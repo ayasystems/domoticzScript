@@ -1,0 +1,96 @@
+-- Este script baja la lista de precios de tarifa PVPC con discrminación horaria y guarda en una 
+-- variable (lowCostEnergyHour) la hora a la que la energía tiene el mejor precio al cabo del día
+-- Es necesario tener creada la variable lowCostEnergyHour como tipo string
+-- Para cargar el precio de cada hora tenemos también que crear 24 variables
+-- PVPC_0, PVPC_1, PVPC_2 .... así hasta PVPC_23
+-- Crearemos otro dummie que se llame "Precio Luz" que cada hora se actualizará con el precio en ese momento de la Luz
+
+return {
+	on = {
+		timer = {
+			'at 00:00', 
+			'every hour'
+			
+		},
+		httpResponses = {
+			'pvpcCallback' -- must match with the callback passed to the openURL command
+		}
+	},
+	execute = function(domoticz, item)
+
+		if (item.isTimer) then
+		    local Time = require('Time')
+		    local now = Time()
+		   if(now.hour == 0) then
+    		    print('Llamada API PVPC')
+    			domoticz.openURL({
+    				url = 'https://api.esios.ree.es/archives/70/download_json?locale=es',
+    				method = 'GET',
+    				callback = 'pvpcCallback', -- see httpResponses above.
+			})
+    	    end
+    	    local variableName = 'PVPC_'..now.hour
+    	    --domoticz.log('Variable: '..variableName, domoticz.LOG_ERROR)
+    	    local precioActual = domoticz.variables(variableName).value
+    	    --domoticz.log('precioActual: '..precioActual, domoticz.LOG_ERROR)
+    	    --domoticz.log('Precio actual: '..precioActual, domoticz.LOG_ERROR)
+ 		    precioActual = tostring(precioActual) 
+    	    --domoticz.log('Precio actual: '..precioActual, domoticz.LOG_ERROR)
+    	    domoticz.devices('Precio Luz').updateText(precioActual)
+		
+		end
+
+		if (item.isHTTPResponse) then
+		    print('Respuesta API PVPC '..item.statusCode)
+			if (item.statusCode == 200) then
+			    --print("Es Json: "..tostring(item.isJSON))
+				if (item.isJSON) then  
+                        --print("entra 1")     
+                        local precioEco = 999999
+                        local horaEco   = 0
+        				local hora = 0	
+ 
+        				for i = 1,24,1
+        				do
+        				    hora = i-1
+        					local someValue = item.json.PVPC[i]["NOC"] -- just an example
+                            someValue = someValue:gsub(',','.')
+                            someValue = tonumber(someValue)/10
+        					print('Valor PVPC '..tostring(i-1)..'h '..someValue)
+        					if someValue<precioEco then
+        					   precioEco = someValue
+        					   horaEco   = hora
+        					end
+        					--if hora <= 12 then
+        					    local variableName = 'PVPC_'..hora
+        					    domoticz.variables(variableName).set(someValue)  
+        					
+        					--end
+        					if hora == 0 then
+                        	    domoticz.log('Precio actual: '..precioEco, domoticz.LOG_ERROR)
+                        	    domoticz.devices('Precio Luz').updateText(precioEco)
+        					end
+        				end
+        				
+        				local precioEcoTXT = tostring(precioEco)
+        			    --precioEcoTXT = precioEcoTXT:gsub('.', ',')
+        				local texto = 'Precio más bajo PVPC 2.0 DHA a las '..tonumber(horaEco)..' hrs a '..precioEcoTXT..' centimos/kWh'
+                        print(texto)
+                        --domoticz.openURL({
+                        --    url = "https://api.telegram.org/botXXXXXXXX:yyyyyyyyyyy/sendMessage?chat_id=-111111111&text="..texto,
+                        --    method = 'GET'
+                        -- })
+                        
+                        
+                        --Actualizamos la variable con la hora de tarifa más económica para hoy
+                		domoticz.variables('lowCostEnergyHour').set(horaEco)                    
+				end
+			else
+				domoticz.log('There was a problem handling the request', domoticz.LOG_ERROR)
+				domoticz.log(item, domoticz.LOG_ERROR)
+			end
+
+		end
+
+	end
+}
