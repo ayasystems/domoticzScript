@@ -4,6 +4,10 @@
 -- Para cargar el precio de cada hora tenemos también que crear 24 variables
 -- PVPC_0, PVPC_1, PVPC_2 .... así hasta PVPC_23
 -- Crearemos otro dummie que se llame "Precio Luz" que cada hora se actualizará con el precio en ese momento de la Luz
+-- Tanto los PVPC_XX como el "Precio Luz" serán un dummie tipo texto
+-- Autor @ea4gkq 
+-- Visita www.domotuto.com
+
 
 return {
 	on = {
