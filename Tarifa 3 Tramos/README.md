@@ -16,6 +16,7 @@
 
 3. Solo nos queda crear dos nuevo eventos en DZEvents.
    - DHA_3T
+
      **Especial atención al device PZEM, cambiar según corresponda, debe ser el que mide el consumo de la casa**
 
    - TRAMOS_HORARIOS
