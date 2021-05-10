@@ -16,6 +16,8 @@ Ahora tenemos que crear 3 dummies virtuales de tipo Electric (Instant+Counter)
 
 Solo nos queda crear dos nuevo eventos en DZEvents.
 - DHA_3T
+
+
 Especial atención al device PZEM, cambiar según corresponda, debe ser el que mide el consumo de la casa
 
 - TRAMOS_HORARIOS
