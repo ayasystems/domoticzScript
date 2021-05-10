@@ -1,4 +1,4 @@
-# Descriminación horaria 3 tramos
+# Descriminación horaria 3 tramos  🚀
 
 1. Necesitamos crear un **selector switch** llamado TarifaLuz:
 
@@ -23,3 +23,10 @@
 
 
 Puedes acceder a más scripts y tutoriales en https://domotuto.com/
+
+
+## Expresiones de Gratitud 🎁
+
+* Comenta a otros sobre este proyecto 📢
+* Invita una cerveza 🍺 o un café ☕ a alguien del equipo. 
+* Da las gracias públicamente 🤓.
