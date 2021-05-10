@@ -1,11 +1,13 @@
 # Descrinación horaria 3 tramos
 
-Necesitamos crear un selector switch llamado TarifaLuz
+Necesitamos crear un selector switch llamado TarifaLuz:
+
 Level 0 -> Valle
 Level 10 -> Llano
 Level 20 -> Punta
 
 Ahora tenemos que crear 3 dummies virtuales de tipo Electric (Instant+Counter)
+
 1. PPunta
 2. PLlano
 3. PValle
