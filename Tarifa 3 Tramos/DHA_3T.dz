@@ -1,0 +1,128 @@
+return {
+	on = {
+		timer = {
+			'every 1 minutes' -- just an example to trigger the request
+		}
+	},
+    data =
+    {
+        counterPrev = { initial = 0 }
+    },
+	logging = {
+		level = domoticz.LOG_ERROR,
+		marker = 'DHA_3T',
+	},
+	execute = function(domoticz, item)
+	    
+	    --Cambiar PZEM por el device que corresponde al consumo de la casa
+	    local instantNow   = domoticz.devices('PZEM').usage
+	    local counterToday = domoticz.devices('PZEM').counterToday*1000
+	    local counterPrev  = domoticz.data.counterPrev
+		
+		local tarifaActual = domoticz.devices('TarifaLuz')
+		
+		local pValle = domoticz.devices('PValle')
+		local pLlano = domoticz.devices('PLlano')	    
+		local pPunta = domoticz.devices('PPunta')
+		
+		local valleToday = pValle.WhTotal
+		local llanoToday = pLlano.WhTotal
+		local puntaToday = pPunta.WhTotal
+		
+		if(valleToday<0)then
+		    valleToday = (valleToday * -1)
+		end
+		
+		if(llanoToday<0)then
+		    llanoToday = (llanoToday * -1)
+		end
+		
+		if(puntaToday<0)then
+		    puntaToday = (puntaToday * -1)
+		end
+		
+
+		
+ 
+	    
+        local tValle = 'VALLE'
+        local tLlano = 'LLANO'
+        local tPunta = 'PUNTA'	    
+	    
+	    local consumo = 0
+	    
+		local Time = require('Time')
+		local now = Time()	  
+		
+		local calc = 0
+	    
+		--Calculamos el consumo desde la última lectura
+		if(tonumber(counterToday)>=tonumber(counterPrev))then
+		    consumo = tonumber(counterToday)-tonumber(counterPrev)
+	    else
+	        consumo = 0
+	    end
+	    
+        domoticz.data.counterPrev = tonumber(counterToday)	    
+	    
+       	domoticz.log('counterToday = '..counterToday, domoticz.LOG_ERROR)	  
+       	domoticz.log('counterPrev = '..counterPrev, domoticz.LOG_ERROR)	  	  
+       	domoticz.log('counterDif = '..consumo, domoticz.LOG_ERROR)	  	  
+       	domoticz.log('pValle.counterToday = '..valleToday,  domoticz.LOG_ERROR)	  	  
+       	domoticz.log('pLlano.counterToday = '..llanoToday,  domoticz.LOG_ERROR)	  	  
+       	domoticz.log('pPunta.counterToday  = '..puntaToday, domoticz.LOG_ERROR)	    
+	  
+	  
+	  
+	  if (1==1)then
+    	   if consumo > 0 then
+               if tarifaActual.level == 0 then --valle
+                   
+                    calc =  pLlano.counterToday  
+                    pLlano.updateElectricity(0,llanoToday)
+                    
+                    calc =  pPunta.counterToday  
+                    pPunta.updateElectricity(0,puntaToday)      
+     
+                    consumo = consumo + ( valleToday)
+                    pValle.updateElectricity(instantNow,consumo)
+                    
+                    
+                    
+                elseif tarifaActual.level == 10 then --llano
+                    
+     
+                    calc =  pValle.counterToday  
+                    pValle.updateElectricity(0,valleToday)
+     
+                    calc =  pPunta.counterToday 
+                    pPunta.updateElectricity(0,puntaToday)                
+    
+                    consumo = domoticz.round(consumo + ( llanoToday),0)
+                    pLlano.updateElectricity(instantNow,tonumber(consumo))
+                    
+                elseif tarifaActual.level == 20 then --punta
+                    
+                    calc =  pValle.counterToday  
+                    pValle.updateElectricity(0,valleToday)                
+                    
+                    calc =  pLlano.counterToday  
+                    pLlano.updateElectricity(0,llanoToday)
+                    
+                    consumo = domoticz.round(consumo + ( puntaToday),0)
+                    pPunta.updateElectricity(instantNow,tonumber(consumo))
+                end
+                domoticz.log('Contador consumo = '..consumo, domoticz.LOG_ERROR)
+            end
+	  else
+            domoticz.log('Contador consumo = '..consumo, domoticz.LOG_ERROR)	      
+    	    consumo = 0
+            pValle.updateElectricity(instantNow,consumo)
+            pLlano.updateElectricity(instantNow,consumo)
+    	    pPunta.updateElectricity(instantNow,consumo)
+	  end 
+	   
+
+        
+	end
+}
