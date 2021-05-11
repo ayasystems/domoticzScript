@@ -1,4 +1,4 @@
-# Descriminación horaria 3 tramos  🚀
+# Discriminación horaria 3 tramos  🚀
 
 1. Necesitamos crear un **selector switch** llamado TarifaLuz:
 
