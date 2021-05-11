@@ -5,6 +5,8 @@
    - Level 0 -> Valle
    - Level 10 -> Llano
    - Level 20 -> Punta
+![Web](https://github.com/ayasystems/domoticzScript/blob/master/Tarifa%203%20Tramos/tarifaLuz.png)
+
 
 2. Ahora tenemos que crear 3 **dummies virtuales** de tipo **Electric (Instant+Counter)**
 
