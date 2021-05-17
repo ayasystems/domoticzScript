@@ -1,7 +1,7 @@
 return {
 	on = {
 		timer = {"every hour"
-		        -- ,"every minutes" --solo para pruebas
+		         -- ,"every minutes" --solo para pruebas
 		         }
 	},
     data = {
@@ -28,8 +28,10 @@ return {
         if now.wday == 1 then
             diaSemana = 7
         else
-            disaSemana = now.wday - 1 --ajustar según sistema operativo
+            diaSemana = now.wday - 1 --ajustar según sistema operativo
         end
+        
+
         
         local tValle = 'VALLE'
         local tLlano = 'LLANO'
@@ -45,25 +47,20 @@ return {
         -- 3 Miércoles
         -- ...
         -- 7 Domingo
-        
-
-        
-        
-        --0 a 8 Valle
-        --8 a 10 Llano
-        --10 a 14 Punta
-        --14 a 18 Llano
-        --18 a 22 Punta
-        --22 a 24 Llano
-        
-       --	domoticz.log('Día semana = '..diaSemana, domoticz.LOG_ERROR)
+         
+     	 --domoticz.log('Día semana = '..diaSemana, domoticz.LOG_ERROR)
      --   now.wday
         if (diaSemana == 6 or diaSemana == 7) then --los festivos no se controlarán
             
             tramoActual = tValle
         else
            
-           
+        --0 a 8 Valle
+        --8 a 10 Llano
+        --10 a 14 Punta
+        --14 a 18 Llano
+        --18 a 22 Punta
+        --22 a 24 Llano
            if ( now.hour>=0      and now.hour<8 ) then
                tramoActual = tValle
            elseif ( now.hour>=8  and now.hour<10) then
