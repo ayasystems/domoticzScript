@@ -14,7 +14,7 @@ return {
 	},
 	execute = function(domoticz, item)
 	    
-	    --Cambiar PZEM por el device que corresponde al consumo de la casa
+	    
 	    local instantNow   = domoticz.devices('PZEM').usage
 	    local counterToday = domoticz.devices('PZEM').counterToday*1000
 	    local counterPrev  = domoticz.data.counterPrev
@@ -25,10 +25,14 @@ return {
 		local pLlano = domoticz.devices('PLlano')	    
 		local pPunta = domoticz.devices('PPunta')
 		
+		local cValle = domoticz.devices('CValle')
+		local cLlano = domoticz.devices('CLlano')	    
+		local cPunta = domoticz.devices('CPunta')
+		
 		local valleToday = pValle.WhTotal
 		local llanoToday = pLlano.WhTotal
 		local puntaToday = pPunta.WhTotal
-		
+                  
 		if(valleToday<0)then
 		    valleToday = (valleToday * -1)
 		end
@@ -84,10 +88,11 @@ return {
                     calc =  pPunta.counterToday  
                     pPunta.updateElectricity(0,puntaToday)      
      
+ 
                     consumo = consumo + ( valleToday)
                     pValle.updateElectricity(instantNow,consumo)
                     
-                    
+
                     
                 elseif tarifaActual.level == 10 then --llano
                     
