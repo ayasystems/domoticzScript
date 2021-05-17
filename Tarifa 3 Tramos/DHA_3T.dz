@@ -25,9 +25,9 @@ return {
 		local pLlano = domoticz.devices('PLlano')	    
 		local pPunta = domoticz.devices('PPunta')
 		
-		local cValle = domoticz.devices('CValle')
-		local cLlano = domoticz.devices('CLlano')	    
-		local cPunta = domoticz.devices('CPunta')
+		--local cValle = domoticz.devices('CValle')
+		--local cLlano = domoticz.devices('CLlano')	    
+		--local cPunta = domoticz.devices('CPunta')
 		
 		local valleToday = pValle.WhTotal
 		local llanoToday = pLlano.WhTotal
