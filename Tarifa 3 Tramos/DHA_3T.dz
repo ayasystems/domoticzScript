@@ -25,9 +25,12 @@ return {
 		local pLlano = domoticz.devices('PLlano')	    
 		local pPunta = domoticz.devices('PPunta')
 		
-		--local cValle = domoticz.devices('CValle')
-		--local cLlano = domoticz.devices('CLlano')	    
-		--local cPunta = domoticz.devices('CPunta')
+		local cValle = domoticz.devices('CValle')
+		local cLlano = domoticz.devices('CLlano')	    
+		local cPunta = domoticz.devices('CPunta')    
+		local cTotal = domoticz.devices('CTotal')
+		
+		local ckwh = domoticz.devices('PrecioPVPC').sensorValue --precio céntimos kwh
 		
 		local valleToday = pValle.WhTotal
 		local llanoToday = pLlano.WhTotal
@@ -69,14 +72,17 @@ return {
 	    
         domoticz.data.counterPrev = tonumber(counterToday)	    
 	    
-       	domoticz.log('counterToday = '..counterToday, domoticz.LOG_ERROR)	  
-       	domoticz.log('counterPrev = '..counterPrev, domoticz.LOG_ERROR)	  	  
-       	domoticz.log('counterDif = '..consumo, domoticz.LOG_ERROR)	  	  
-       	domoticz.log('pValle.counterToday = '..valleToday,  domoticz.LOG_ERROR)	  	  
-       	domoticz.log('pLlano.counterToday = '..llanoToday,  domoticz.LOG_ERROR)	  	  
-       	domoticz.log('pPunta.counterToday  = '..puntaToday, domoticz.LOG_ERROR)	    
+       	--domoticz.log('counterToday = '..counterToday, domoticz.LOG_ERROR)	  
+       	--domoticz.log('counterPrev = '..counterPrev, domoticz.LOG_ERROR)	  	  
+       	--domoticz.log('counterDif = '..consumo, domoticz.LOG_ERROR)	  	  
+       	--domoticz.log('pValle.counterToday = '..valleToday,  domoticz.LOG_ERROR)	  	  
+       	--domoticz.log('pLlano.counterToday = '..llanoToday,  domoticz.LOG_ERROR)	  	  
+       	--domoticz.log('pPunta.counterToday  = '..puntaToday, domoticz.LOG_ERROR)	    
 	  
-	  
+	    local coste = ( consumo * ckwh / 1000 ) + .0 --Queremos el coste en céntimos de Euro
+	    
+	    	  
+       	domoticz.log('Coste   = '..coste, domoticz.LOG_ERROR)	   
 	  
 	  if (1==1)then
     	   if consumo > 0 then
@@ -89,11 +95,14 @@ return {
                     pPunta.updateElectricity(0,puntaToday)      
      
  
-                    consumo = consumo + ( valleToday)
-                    pValle.updateElectricity(instantNow,consumo)
+                    consumo = domoticz.round(consumo + ( valleToday),0)
+                    pValle.updateElectricity(instantNow,tonumber(consumo))
                     
-
-                    
+                    if(ckwh<900)then
+                        cValle.incrementCounter(coste)
+                        cLlano.incrementCounter(0)
+                        cPunta.incrementCounter(0)
+                    end
                 elseif tarifaActual.level == 10 then --llano
                     
      
@@ -106,6 +115,12 @@ return {
                     consumo = domoticz.round(consumo + ( llanoToday),0)
                     pLlano.updateElectricity(instantNow,tonumber(consumo))
                     
+                    if(ckwh<900)then
+                        cValle.incrementCounter(0)
+                        cLlano.incrementCounter(coste)
+                        cPunta.incrementCounter(0)
+                    end
+                    
                 elseif tarifaActual.level == 20 then --punta
                     
                     calc =  pValle.counterToday  
@@ -116,8 +131,18 @@ return {
                     
                     consumo = domoticz.round(consumo + ( puntaToday),0)
                     pPunta.updateElectricity(instantNow,tonumber(consumo))
+                    
+                    if(ckwh<900)then
+                        cValle.incrementCounter(0)
+                        cLlano.incrementCounter(0)
+                        cPunta.incrementCounter(coste)
+                    end
+                    
                 end
                 domoticz.log('Contador consumo = '..consumo, domoticz.LOG_ERROR)
+                if(ckwh<900)then
+                    cTotal.incrementCounter(coste)
+                end
             end
 	  else
             domoticz.log('Contador consumo = '..consumo, domoticz.LOG_ERROR)	      
