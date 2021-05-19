@@ -38,7 +38,7 @@ Vamos al lio......
 
    - TRAMOS_HORARIOS
    
-      **Este script necesita tener funcionando y actualizado el script de precios de PVPC https://github.com/ayasystems/domoticzScript/blob/master/PrecioPVPC.txt **
+      **Este script necesita tener funcionando y actualizado el script de precios de PVPC** https://github.com/ayasystems/domoticzScript/blob/master/PrecioPVPC.txt 
 
 Puedes acceder a más scripts y tutoriales en https://domotuto.com/
 
