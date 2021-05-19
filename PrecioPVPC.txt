@@ -4,6 +4,17 @@
 -- Para cargar el precio de cada hora tenemos también que crear 24 variables
 -- PVPC_0, PVPC_1, PVPC_2 .... así hasta PVPC_23
 -- Crearemos otro dummie, de tipo texto, que se llame "Precio Luz" que cada hora se actualizará con el precio en ese momento de la Luz
+-- Crearemos otro dummie, de tipo custom sensor que se llame "PrecioPVPC"
+-- Tanto los PVPC_XX como el "lowCostEnergyHour" serán un variables tipo texto
+-- Autor @ea4gkq 
+-- Visita www.domotuto.com
+
+-- Este script baja la lista de precios de tarifa PVPC con discrminación horaria y guarda en una 
+-- variable (lowCostEnergyHour) la hora a la que la energía tiene el mejor precio al cabo del día
+-- Es necesario tener creada la variable lowCostEnergyHour como tipo string
+-- Para cargar el precio de cada hora tenemos también que crear 24 variables
+-- PVPC_0, PVPC_1, PVPC_2 .... así hasta PVPC_23
+-- Crearemos otro dummie, de tipo texto, que se llame "Precio Luz" que cada hora se actualizará con el precio en ese momento de la Luz
 -- Tanto los PVPC_XX como el "lowCostEnergyHour" serán un variables tipo texto
 -- Autor @ea4gkq 
 -- Visita www.domotuto.com
@@ -53,10 +64,17 @@ return {
     	    local precioActual = domoticz.variables(variableName).value
     	    --domoticz.log('precioActual: '..precioActual, domoticz.LOG_ERROR)
     	    --domoticz.log('Precio actual: '..precioActual, domoticz.LOG_ERROR)
+    	    local precioFloat = 0
+    	    precioFloat = tonumber(precioActual)+0.0
+    	    if(precioFloat<900)then
+		        domoticz.devices('PrecioPVPC').updateCustomSensor(precioFloat)
+	        else
+	            domoticz.devices('PrecioPVPC').updateCustomSensor(0)
+	        
+	        end
  		    precioActual = tostring(precioActual) 
     	    --domoticz.log('Precio actual: '..precioActual, domoticz.LOG_ERROR)
     	    domoticz.devices('Precio Luz').updateText(precioActual)
-		
 		end
 
 		if (item.isHTTPResponse) then
@@ -96,10 +114,12 @@ return {
         				local texto = 'Precio más bajo PVPC 2.0 DHA a las *'..tonumber(horaEco)..' hrs* a *'..precioEcoTXT..' centimos/kWh*'
                         print(texto)
                         domoticz.openURL({
-                            url = "https://api.telegram.org/bot1111111111:xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx/sendMessage?chat_id=-111111111&parse_mode=Markdown&text="..texto,
+                            url = "https://api.telegram.org/bot111111111:XXXXXXXXXXXXXXXXXXXXXXXXXXXXXX/sendMessage?chat_id=-111111111&parse_mode=Markdown&text="..texto,
                             method = 'GET'
                          })
+ 
                      
+                         
                         --Actualizamos la variable con la hora de tarifa más económica para hoy
                 		domoticz.variables('lowCostEnergyHour').set(horaEco)                    
 				end
