@@ -1,5 +1,13 @@
 # Discriminación horaria 3 tramos  🚀
 
+
+Con estos scripts tendremos 3 contadores de la luz y acumularemos el coste en céntimos de euro en cada una de las nuevas tarifas 2.0 TD
+
+![Web](https://github.com/ayasystems/domoticzScript/blob/master/Tarifa%203%20Tramos/tarifaLuz_2.png)
+
+
+Vamos al lio......
+
 1. Necesitamos crear un **selector switch** llamado TarifaLuz:
 
    - Level 0 -> Valle
