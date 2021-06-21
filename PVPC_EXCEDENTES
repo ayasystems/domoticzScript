@@ -1,0 +1,113 @@
+-- Este script baja la lista de precios a la que pagan los excedentes en PVPC
+
+
+-- Para cargar el precio de cada hora tenemos también que crear 24 variables
+-- EXCEDENTES_0, EXCEDENTES_1, EXCEDENTES_2 .... así hasta EXCEDENTES_23
+-- Crearemos otro dummie, de tipo custom sensor que se llame "PrecioExcedente"
+-- Las variables EXCEDENTES_XX  serán un variables tipo string / texto
+-- Para probarlo podéis crear una escena que se llame testExcedentes, cada vez que se lance esa escena se actualizarán los datos
+-- Autor @ea4gkq 
+-- Visita www.domotuto.com
+
+return {
+	on = {
+		timer = {
+			'at 00:01', 
+			'every hour'
+			
+		},
+		scenes = {
+			'testExcedentes'
+		},		
+		httpResponses = {
+			'pvpcExcedentesCallback' -- must match with the callback passed to the openURL command
+		}
+	},
+	execute = function(domoticz, item)
+
+
+		if (item.isTimer or item.isScene) then
+		    domoticz.log('Script PVCP Excedentes raised by timer', domoticz.LOG_ERROR)
+		    local Time = require('Time')
+		    local now = Time()
+		    --SUSTITUIR LAS XXXXXX POR TU TOKEN DE ESIOS
+            local token = 'Token token=\"xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx\"';
+            --'{"test":[1,2,3,4]}'
+            
+            local headerToken = { ['Authorization'] = ''..token..'' };
+
+        	local precioLuz = domoticz.devices('PrecioExcedente').sensorValue
+		    		
+		   if( (now.hour == 0 and now.minutes == 1 )or precioLuz == '999' or item.isScene ) then
+		       		    --domoticz.log('Entro al for', domoticz.LOG_ERROR)
+        				for i = 1,24,1
+        				do
+        				    hora = i-1
+        					local someValue = 999
+        					print('Reset valor PVPC '..tostring(i-1)..'h '..someValue)
+        					local variableName = 'EXCEDENTES_'..hora
+        					domoticz.variables(variableName).set(someValue)  
+        					
+    				    end
+    				
+    		    	domoticz.log('Llamada API PVPC', domoticz.LOG_ERROR)
+    			domoticz.openURL({
+    				url = 'https://api.esios.ree.es/indicators/1739',
+    				method = 'GET',
+    				headers = headerToken,
+    	 			callback = 'pvpcExcedentesCallback', -- see httpResponses above.
+		    	})
+	        end
+	    
+    	    local variableName = 'EXCEDENTES_'..now.hour
+    	    --domoticz.log('Variable: '..variableName, domoticz.LOG_ERROR)
+    	    local precioActual = domoticz.variables(variableName).value
+    	    --domoticz.log('precioActual: '..precioActual, domoticz.LOG_ERROR)
+    	    --domoticz.log('Precio actual: '..precioActual, domoticz.LOG_ERROR)
+    	    local precioFloat = 0
+    	    precioFloat = tonumber(precioActual)+0.0
+    	    if(precioFloat<900)then
+		        domoticz.devices('PrecioExcedente').updateCustomSensor(precioFloat)
+	        else
+	            domoticz.devices('PrecioExcedente').updateCustomSensor(0)
+	        
+	        end
+ 
+	    end
+	
+	if (item.isHTTPResponse) then
+		    print('Respuesta API PVPC Excedentes'..item.statusCode)
+			if (item.statusCode == 200) then
+			    --print("Es Json: "..tostring(item.isJSON))
+				if (item.isJSON) then  
+                        --print("entra 1")     
+ 	
+ 
+        				for i = 1,24,1
+        				do
+        				    hora = i-1
+        				    --payload.indicator.values
+        					local someValue = item.json.indicator.values[i]["value"] -- just an example
+                            --someValue = someValue:gsub(',','.')
+                            someValue = tonumber(someValue)/10
+        					--print('Valor excedente '..tostring(someValue)..'h '..someValue)
+ 
+      					    local variableName = 'EXCEDENTES_'..hora
+       					    domoticz.variables(variableName).set(someValue)  
+        					
+ 
+ 
+        				end
+        				
+                 
+				end
+			else
+				domoticz.log('There was a problem handling the request', domoticz.LOG_ERROR)
+				domoticz.log(item, domoticz.LOG_ERROR)
+			end
+
+		end	
+	
+		
+	end
+}
