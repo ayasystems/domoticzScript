@@ -1,4 +1,4 @@
--- Este script baja la lista de precios de tarifa PVPC con discrminación horaria y guarda en una 
+-- Este script baja la lista de precios de tarifa PVPC 2.0 TD con discrminación horaria y guarda en una 
 -- variable (lowCostEnergyHour) la hora a la que la energía tiene el mejor precio al cabo del día
 -- Es necesario tener creada la variable lowCostEnergyHour como tipo string
 -- Para cargar el precio de cada hora tenemos también que crear 24 variables
@@ -9,15 +9,7 @@
 -- Autor @ea4gkq 
 -- Visita www.domotuto.com
 
--- Este script baja la lista de precios de tarifa PVPC con discrminación horaria y guarda en una 
--- variable (lowCostEnergyHour) la hora a la que la energía tiene el mejor precio al cabo del día
--- Es necesario tener creada la variable lowCostEnergyHour como tipo string
--- Para cargar el precio de cada hora tenemos también que crear 24 variables
--- PVPC_0, PVPC_1, PVPC_2 .... así hasta PVPC_23
--- Crearemos otro dummie, de tipo texto, que se llame "Precio Luz" que cada hora se actualizará con el precio en ese momento de la Luz
--- Tanto los PVPC_XX como el "lowCostEnergyHour" serán un variables tipo texto
--- Autor @ea4gkq 
--- Visita www.domotuto.com
+ 
 
 return {
 	on = {
@@ -90,7 +82,7 @@ return {
         				for i = 1,24,1
         				do
         				    hora = i-1
-        					local someValue = item.json.PVPC[i]["NOC"] -- just an example
+        					local someValue = item.json.PVPC[i]["PCB"] -- just an example
                             someValue = someValue:gsub(',','.')
                             someValue = tonumber(someValue)/10
         					print('Valor PVPC '..tostring(i-1)..'h '..someValue)
