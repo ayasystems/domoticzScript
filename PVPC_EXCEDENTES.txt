@@ -34,7 +34,8 @@ return {
             local token = 'Token token=\"xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx\"';
             --'{"test":[1,2,3,4]}'
             
-            local headerToken = { ['Authorization'] = ''..token..'' };
+            --local headerToken = { ['Authorization'] = ''..token..'' };
+            local headerToken = { ['Authorization'] = ''..token..'', ['x-api-key'] = "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx" };
 
         	local precioLuz = domoticz.devices('PrecioExcedente').sensorValue
 		    		
